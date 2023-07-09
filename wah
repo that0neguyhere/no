@@ -1,0 +1,76 @@
+--local FakeRig = workspace.Terrain("𝔾𝕖𝕝𝕒𝕥𝕖𝕜r𝕒𝕨"..tostring(game.PlaceId))
+local Global = (getgenv and getgenv()) or getfenv(0)
+local Rad = math.rad
+Global.ReanimateSettings = {
+    AntiSleep = true, -- Recommended: True
+    AntiVoid = true, -- Recommended: True
+    NoClip = false, -- Recommended: False
+    DynamicalVelocity = true, -- Recommended: True
+    Animations = false, -- Recommended: False for scripts / Other than that True.
+    ToolFling = true, -- Recommended: Up to you.
+    NewRunServiceEvents = true, -- Recommended: True
+    KeepCharacter = false, -- Recommended: false
+    ExtraOptimization = true, -- Recommended: Up to you.
+    EagerBulkExecution = true, -- Recommended (various by pc) low end: false | medium-high: true
+
+    DefinedHats = { -- true: MeshId, false = TextureId
+        ['Torso1'] = {'13421774668', CFrame.new(0,0,0), CFrame.Angles(Rad(180),0,0), true},
+        ['Torso2'] = {'nil', CFrame.new(0,0,0), CFrame.Angles(0,0,0), false},
+        ['Right Arm'] = {'11502882458', CFrame.new(0,0.3,0), CFrame.Angles(0,Rad(0), Rad(0)), true},
+        ['Left Arm'] = {'12344206657', CFrame.new(0,0,0), CFrame.Angles(90,Rad(180), Rad(0)), true},
+        ['Right Leg'] = {'11263221350', CFrame.new(0,0,0), CFrame.Angles(0,Rad(90), Rad(90)), true},
+        ['Left Leg'] = {'11159370334', CFrame.new(0,0,0), CFrame.Angles(0,Rad(90),Rad(90)), true},
+    }
+}
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/toldblock/GelatekReanimateV2/main/Releases/Update1.lua"))()
+
+--wait(3)
+
+--game:GetService("Players").LocalPlayer.Character = game:GetService("Players").LocalPlayer.Character:FindFirstChild(game:GetService("Players").LocalPlayer.Name)
+
+local Global = (getgenv and getgenv()) or getfenv(0)
+local ReanimateData = Global.ReanimateData
+
+local CA = CFrame.Angles
+local Random = math.random
+
+local isnetworkowner = isnetworkowner or function(Part)
+	return Part.ReceiveAge == 0
+end
+
+local RunService = game:GetService("RunService")
+local Client = game:GetService("Players").LocalPlayer
+local Character = Client.Character
+local RootPart = Character:WaitForChild("HumanoidRootPart", 10)
+local Mouse = Client:GetMouse()
+
+local Bullet = ReanimateData.FlingPart
+warn(Bullet.Name)
+local Connections = ReanimateData.Connections
+ReanimateData.FlingEnabled = true
+local Flinging = false
+table.insert(Connections, Mouse.Button1Down:Connect(function()
+	Flinging = true
+end))
+
+table.insert(Connections, Mouse.Button1Up:Connect(function()
+	Flinging = false
+end))
+local OffsetDown = CFrame.new(0, -12, 0)
+local Rotation = CA(Random(-360,360),Random(-360,360),Random(-360,360))
+local V3 = Vector3.new
+table.insert(Connections, RunService.Heartbeat:Connect(function()
+	Rotation = CA(Random(-360,360),Random(-360,360),Random(-360,360))
+	if (Bullet and isnetworkowner(Bullet)) then
+		if Flinging then
+			Bullet.RotVelocity = V3(0,7500,0)
+			if Mouse.Target ~= nil then
+				Bullet.CFrame = Mouse.Hit * Rotation
+			end
+		else
+			Bullet.RotVelocity = V3(0,Random(0, 30),0)
+			Bullet.CFrame = RootPart.CFrame * OffsetDown * Rotation
+		end
+	end
+end))
