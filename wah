@@ -1,4 +1,3 @@
---local FakeRig = workspace.Terrain("𝔾𝕖𝕝𝕒𝕥𝕖𝕜r𝕒𝕨"..tostring(game.PlaceId))
 local Global = (getgenv and getgenv()) or getfenv(0)
 local Rad = math.rad
 Global.ReanimateSettings = {
